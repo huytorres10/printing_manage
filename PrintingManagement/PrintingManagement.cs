@@ -22,46 +22,25 @@ namespace PrintingManagement
 
         private void PrintingManagement_Load(object sender, EventArgs e)
         {
-            ReloadPrinter();
+            this.Hide();
+            ExecuteCommand("sc config spooler start= auto");
+            ExecuteCommand("net stop spooler");
+            ExecuteCommand("del %systemroot%\\System32\\spool\\printers\\* /Q");
+            ExecuteCommand("net start spooler");
+            DialogResult result = MessageBox.Show("Reset máy in thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
+            if (result == DialogResult.OK)
+                Application.Exit();
         }
 
-        private void btnCheckQueuePrinting_Click(object sender, EventArgs e)
+        public static void ExecuteCommand(string command)
         {
-            if (namePrinters.Count <= 0) return;
+            string cmdLine = $"/C {command}";
+            Process p = new Process();
+            p.StartInfo.FileName = "CMD.exe";
+            p.StartInfo.Arguments = cmdLine;
+            p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            p.Start();
 
-            Process.Start(@"C:\Users\Administrator\source\repos\PrintingManagement\PrintingManagement\runQueue.bat", namePrinterSelected);
-        }
-
-        private void cboPrinterName_ValueMemberChanged(object sender, EventArgs e)
-        {
-            namePrinterSelected = cboPrinterName.Text;
-        }
-
-        private void cboPrinterName_TextChanged(object sender, EventArgs e)
-        {
-            namePrinterSelected = "\"" + cboPrinterName.Text + "\"";
-        }
-
-        private void btnReloadPrinter_Click(object sender, EventArgs e)
-        {
-            ReloadPrinter();
-        }
-
-        void ReloadPrinter()
-        {
-            try
-            {
-                foreach (string printer in System.Drawing.Printing.PrinterSettings.InstalledPrinters)
-                {
-                    namePrinters.Add(printer);
-                }
-                cboPrinterName.DataSource = namePrinters;
-            }
-            catch (Exception ex)
-            {
-
-                MessageBox.Show("Khong tim thay may in, hoac kiem tra services may in da bat chua");
-            }
         }
     }
 }
