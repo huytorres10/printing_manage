@@ -13,8 +13,6 @@ namespace PrintingManagement
 {
     public partial class PrintingManagement : Form
     {
-        string namePrinterSelected = "";
-        List<String> namePrinters = new List<string>();
         public PrintingManagement()
         {
             InitializeComponent();
